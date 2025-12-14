@@ -1,3 +1,5 @@
+using Hangfire;
+using Hangfire.SQLite;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +50,8 @@ builder
 	.AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddHangfire(configuration => configuration.UseSQLiteStorage(connectionString));
+builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 
@@ -73,6 +77,7 @@ else
 
 app.UseStatusCodePagesWithReExecute(pathFormat: "/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
+app.UseHangfireDashboard(pathMatch: "/hangfire");
 
 app.UseAntiforgery();
 
