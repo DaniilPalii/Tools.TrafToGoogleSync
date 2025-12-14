@@ -59,3 +59,8 @@ nunit-*.xml
 credentials.json
 **/token-store/
 **/token-store/*
+
+# Sqlite database files
+*.db
+*.db-shm
+*.db-wal
