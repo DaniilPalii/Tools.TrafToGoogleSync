@@ -54,3 +54,8 @@ TestResult.xml
 nunit-*.xml
 
 .idea
+
+# Ignore Google OAuth credentials and tokens
+credentials.json
+**/token-store/
+**/token-store/*
