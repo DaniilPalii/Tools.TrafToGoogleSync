@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrafToGoogleSync.UnitTests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{48C9E849-8ADB-4A8F-B021-C464E36A512E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrafToGoogleSync.BlazorServer", "Source\TrafToGoogleSync.BlazorServer\TrafToGoogleSync.BlazorServer.csproj", "{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,18 @@ Global
 		{7191F44D-3494-4879-AEBB-CB9B4A05495B}.Release|x64.Build.0 = Release|Any CPU
 		{7191F44D-3494-4879-AEBB-CB9B4A05495B}.Release|x86.ActiveCfg = Release|Any CPU
 		{7191F44D-3494-4879-AEBB-CB9B4A05495B}.Release|x86.Build.0 = Release|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Debug|x64.Build.0 = Debug|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Debug|x86.Build.0 = Debug|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Release|x64.ActiveCfg = Release|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Release|x64.Build.0 = Release|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Release|x86.ActiveCfg = Release|Any CPU
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,5 +66,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7191F44D-3494-4879-AEBB-CB9B4A05495B} = {48C9E849-8ADB-4A8F-B021-C464E36A512E}
 		{4E334474-EC25-4189-BF78-EAC4C0D448A1} = {B8EFCA5F-814F-285C-A8CB-F00F14650265}
+		{ED4AD316-19FE-45C2-89A2-4A35749BCA4B} = {B8EFCA5F-814F-285C-A8CB-F00F14650265}
 	EndGlobalSection
 EndGlobal
