@@ -73,8 +73,8 @@ var end = start.AddHours(value: 1);
 
 var spec = new EventSpec(
 	Summary: "Sample sync event",
-	Start: start,
-	End: end,
+	start,
+	end,
 	Description: "Created by TrafToGoogleSync");
 
 try

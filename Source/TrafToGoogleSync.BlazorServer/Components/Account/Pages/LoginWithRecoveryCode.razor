@@ -1,5 +1,4 @@
 ﻿@page "/Account/LoginWithRecoveryCode"
-
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
 @using TrafToGoogleSync.BlazorServer.Data
@@ -24,7 +23,8 @@
 			<DataAnnotationsValidator/>
 			<ValidationSummary class="text-danger" role="alert"/>
 			<div class="form-floating mb-3">
-				<InputText @bind-Value="Input.RecoveryCode" id="Input.RecoveryCode" class="form-control" autocomplete="off" placeholder="RecoveryCode"/>
+				<InputText @bind-Value="Input.RecoveryCode" id="Input.RecoveryCode" class="form-control"
+						   autocomplete="off" placeholder="RecoveryCode"/>
 				<label for="Input.RecoveryCode" class="form-label">Recovery Code</label>
 				<ValidationMessage For="() => Input.RecoveryCode" class="text-danger"/>
 			</div>
@@ -48,12 +48,12 @@
 		Input ??= new();
 
 		// Ensure the user has gone through the username & password screen first
-		user = await SignInManager.GetTwoFactorAuthenticationUserAsync() ?? throw new InvalidOperationException("Unable to load two-factor authentication user.");
+		user = await SignInManager.GetTwoFactorAuthenticationUserAsync() ?? throw new InvalidOperationException(message: "Unable to load two-factor authentication user.");
 	}
 
 	private async Task OnValidSubmitAsync()
 	{
-		var recoveryCode = Input.RecoveryCode.Replace(" ", string.Empty);
+		var recoveryCode = Input.RecoveryCode.Replace(oldValue: " ", string.Empty);
 
 		var result = await SignInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
 
@@ -61,17 +61,17 @@
 
 		if (result.Succeeded)
 		{
-			Logger.LogInformation("User with ID '{UserId}' logged in with a recovery code.", userId);
+			Logger.LogInformation(message: "User with ID '{UserId}' logged in with a recovery code.", userId);
 			RedirectManager.RedirectTo(ReturnUrl);
 		}
 		else if (result.IsLockedOut)
 		{
-			Logger.LogWarning("User account locked out.");
-			RedirectManager.RedirectTo("Account/Lockout");
+			Logger.LogWarning(message: "User account locked out.");
+			RedirectManager.RedirectTo(uri: "Account/Lockout");
 		}
 		else
 		{
-			Logger.LogWarning("Invalid recovery code entered for user with ID '{UserId}' ", userId);
+			Logger.LogWarning(message: "Invalid recovery code entered for user with ID '{UserId}' ", userId);
 			message = "Error: Invalid recovery code entered.";
 		}
 	}

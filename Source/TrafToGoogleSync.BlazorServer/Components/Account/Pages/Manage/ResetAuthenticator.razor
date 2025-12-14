@@ -1,5 +1,4 @@
 ﻿@page "/Account/Manage/ResetAuthenticator"
-
 @using Microsoft.AspNetCore.Identity
 @using TrafToGoogleSync.BlazorServer.Data
 
@@ -15,7 +14,8 @@
 <div class="alert alert-warning" role="alert">
 	<p>
 		<span class="glyphicon glyphicon-warning-sign"></span>
-		<strong>If you reset your authenticator key your authenticator app will not work until you reconfigure it.</strong>
+		<strong>If you reset your authenticator key your authenticator app will not work until you reconfigure
+			it.</strong>
 	</p>
 	<p>
 		This process disables 2FA until you verify your authenticator app.
@@ -45,16 +45,16 @@
 			return;
 		}
 
-		await UserManager.SetTwoFactorEnabledAsync(user, false);
+		await UserManager.SetTwoFactorEnabledAsync(user, enabled: false);
 		await UserManager.ResetAuthenticatorKeyAsync(user);
 		var userId = await UserManager.GetUserIdAsync(user);
-		Logger.LogInformation("User with ID '{UserId}' has reset their authentication app key.", userId);
+		Logger.LogInformation(message: "User with ID '{UserId}' has reset their authentication app key.", userId);
 
 		await SignInManager.RefreshSignInAsync(user);
 
 		RedirectManager.RedirectToWithStatus(
-			"Account/Manage/EnableAuthenticator",
-			"Your authenticator app key has been reset, you will need to configure your authenticator app using the new key.",
+			uri: "Account/Manage/EnableAuthenticator",
+			message: "Your authenticator app key has been reset, you will need to configure your authenticator app using the new key.",
 			HttpContext);
 	}
 

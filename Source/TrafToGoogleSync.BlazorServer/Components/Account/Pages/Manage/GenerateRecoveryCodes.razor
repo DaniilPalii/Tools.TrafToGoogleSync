@@ -1,5 +1,4 @@
 ﻿@page "/Account/Manage/GenerateRecoveryCodes"
-
 @using Microsoft.AspNetCore.Identity
 @using TrafToGoogleSync.BlazorServer.Data
 
@@ -25,8 +24,10 @@ else
 			If you lose your device and don't have the recovery codes you will lose access to your account.
 		</p>
 		<p>
-			Generating new recovery codes does not change the keys used in authenticator apps. If you wish to change the key
-			used in an authenticator app you should <a href="Account/Manage/ResetAuthenticator">reset your authenticator keys.</a>
+			Generating new recovery codes does not change the keys used in authenticator apps. If you wish to change the
+			key
+			used in an authenticator app you should <a href="Account/Manage/ResetAuthenticator">reset your authenticator
+				keys.</a>
 		</p>
 	</div>
 	<div>
@@ -60,7 +61,7 @@ else
 
 		if (!isTwoFactorEnabled)
 		{
-			throw new InvalidOperationException("Cannot generate recovery codes for user because they do not have 2FA enabled.");
+			throw new InvalidOperationException(message: "Cannot generate recovery codes for user because they do not have 2FA enabled.");
 		}
 	}
 
@@ -74,10 +75,10 @@ else
 		}
 
 		var userId = await UserManager.GetUserIdAsync(user);
-		recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+		recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, number: 10);
 		message = "You have generated new recovery codes.";
 
-		Logger.LogInformation("User with ID '{UserId}' has generated new 2FA recovery codes.", userId);
+		Logger.LogInformation(message: "User with ID '{UserId}' has generated new 2FA recovery codes.", userId);
 	}
 
 }

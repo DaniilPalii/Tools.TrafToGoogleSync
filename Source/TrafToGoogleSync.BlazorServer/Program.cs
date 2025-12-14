@@ -7,7 +7,6 @@ using TrafToGoogleSync.BlazorServer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder
 	.Services
 	.AddRazorComponents()
@@ -19,28 +18,31 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 
 builder
 	.Services
-	.AddAuthentication(options =>
-	{
-		options.DefaultScheme = IdentityConstants.ApplicationScheme;
-		options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-	})
+	.AddAuthentication(
+		configureOptions: options =>
+		{
+			options.DefaultScheme = IdentityConstants.ApplicationScheme;
+			options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+		})
 	.AddIdentityCookies();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-	?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString(name: "DefaultConnection")
+	?? throw new InvalidOperationException(message: "Connection string 'DefaultConnection' not found.");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-	options.UseSqlite(connectionString));
+builder.Services.AddDbContext<ApplicationDbContext>(
+	optionsAction: options =>
+		options.UseSqlite(connectionString));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder
 	.Services
-	.AddIdentityCore<ApplicationUser>(options =>
-	{
-		options.SignIn.RequireConfirmedAccount = true;
-		options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
-	})
+	.AddIdentityCore<ApplicationUser>(
+		setupAction: options =>
+		{
+			options.SignIn.RequireConfirmedAccount = true;
+			options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
+		})
 	.AddEntityFrameworkStores<ApplicationDbContext>()
 	.AddSignInManager()
 	.AddDefaultTokenProviders();
@@ -56,13 +58,14 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-	app.UseExceptionHandler("/Error", createScopeForErrors: true);
+	app.UseExceptionHandler(errorHandlingPath: "/Error", createScopeForErrors: true);
 
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+	// The default HSTS value is 30 days. You may want to change this for production scenarios, see
+	// https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }
 
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+app.UseStatusCodePagesWithReExecute(pathFormat: "/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
 app.UseAntiforgery();

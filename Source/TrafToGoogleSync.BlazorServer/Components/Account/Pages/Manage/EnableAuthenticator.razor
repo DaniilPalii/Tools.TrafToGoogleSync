@@ -1,5 +1,4 @@
 ﻿@page "/Account/Manage/EnableAuthenticator"
-
 @using System.ComponentModel.DataAnnotations
 @using System.Globalization
 @using System.Text
@@ -21,6 +20,7 @@
 else
 {
 	<StatusMessage Message="@message"/>
+
 	<h3>Configure authenticator app</h3>
 	<div>
 		<p>To use an authenticator app go through the following steps:</p>
@@ -31,19 +31,24 @@ else
 					<a href="https://go.microsoft.com/fwlink/?Linkid=825072">Android</a> and
 					<a href="https://go.microsoft.com/fwlink/?Linkid=825073">iOS</a> or
 					Google Authenticator for
-					<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> and
+					<a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a>
+					and
 					<a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>.
 				</p>
 			</li>
 			<li>
-				<p>Scan the QR Code or enter this key <kbd>@sharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
-				<div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
+				<p>Scan the QR Code or enter this key <kbd>@sharedKey</kbd> into your two factor authenticator app.
+					Spaces and casing do not matter.</p>
+				<div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable
+						QR code generation</a>.
+				</div>
 				<div></div>
 				<div data-url="@authenticatorUri"></div>
 			</li>
 			<li>
 				<p>
-					Once you have scanned the QR code or input the key above, your two factor authentication app will provide you
+					Once you have scanned the QR code or input the key above, your two factor authentication app will
+					provide you
 					with a unique code. Enter the code in the confirmation box below.
 				</p>
 				<div class="row">
@@ -51,7 +56,8 @@ else
 						<EditForm Model="Input" FormName="send-code" OnValidSubmit="OnValidSubmitAsync" method="post">
 							<DataAnnotationsValidator/>
 							<div class="form-floating mb-3">
-								<InputText @bind-Value="Input.Code" id="Input.Code" class="form-control" autocomplete="off" placeholder="Enter the code"/>
+								<InputText @bind-Value="Input.Code" id="Input.Code" class="form-control"
+										   autocomplete="off" placeholder="Enter the code"/>
 								<label for="Input.Code" class="control-label form-label">Verification Code</label>
 								<ValidationMessage For="() => Input.Code" class="text-danger"/>
 							</div>
@@ -106,7 +112,7 @@ else
 		}
 
 		// Strip spaces and hyphens
-		var verificationCode = Input.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
+		var verificationCode = Input.Code.Replace(oldValue: " ", string.Empty).Replace(oldValue: "-", string.Empty);
 
 		var is2faTokenValid = await UserManager.VerifyTwoFactorTokenAsync(
 			user,
@@ -120,19 +126,19 @@ else
 			return;
 		}
 
-		await UserManager.SetTwoFactorEnabledAsync(user, true);
+		await UserManager.SetTwoFactorEnabledAsync(user, enabled: true);
 		var userId = await UserManager.GetUserIdAsync(user);
-		Logger.LogInformation("User with ID '{UserId}' has enabled 2FA with an authenticator app.", userId);
+		Logger.LogInformation(message: "User with ID '{UserId}' has enabled 2FA with an authenticator app.", userId);
 
 		message = "Your authenticator app has been verified.";
 
 		if (await UserManager.CountRecoveryCodesAsync(user) == 0)
 		{
-			recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+			recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, number: 10);
 		}
 		else
 		{
-			RedirectManager.RedirectToWithStatus("Account/Manage/TwoFactorAuthentication", message, HttpContext);
+			RedirectManager.RedirectToWithStatus(uri: "Account/Manage/TwoFactorAuthentication", message, HttpContext);
 		}
 	}
 
@@ -147,26 +153,26 @@ else
 			unformattedKey = await UserManager.GetAuthenticatorKeyAsync(user);
 		}
 
-		sharedKey = FormatKey(unformattedKey!);
+		sharedKey = FormatKey(unformattedKey: unformattedKey!);
 
 		var email = await UserManager.GetEmailAsync(user);
-		authenticatorUri = GenerateQrCodeUri(email!, unformattedKey!);
+		authenticatorUri = GenerateQrCodeUri(email: email!, unformattedKey: unformattedKey!);
 	}
 
 	private string FormatKey(string unformattedKey)
 	{
 		var result = new StringBuilder();
-		int currentPosition = 0;
+		var currentPosition = 0;
 
 		while (currentPosition + 4 < unformattedKey.Length)
 		{
-			result.Append(unformattedKey.AsSpan(currentPosition, 4)).Append(' ');
+			result.Append(value: unformattedKey.AsSpan(currentPosition, length: 4)).Append(value: ' ');
 			currentPosition += 4;
 		}
 
 		if (currentPosition < unformattedKey.Length)
 		{
-			result.Append(unformattedKey.AsSpan(currentPosition));
+			result.Append(value: unformattedKey.AsSpan(currentPosition));
 		}
 
 		return result.ToString().ToLowerInvariant();
@@ -177,15 +183,15 @@ else
 		return string.Format(
 			CultureInfo.InvariantCulture,
 			AuthenticatorUriFormat,
-			UrlEncoder.Encode("Microsoft.AspNetCore.Identity.UI"),
-			UrlEncoder.Encode(email),
+			arg0: UrlEncoder.Encode(value: "Microsoft.AspNetCore.Identity.UI"),
+			arg1: UrlEncoder.Encode(email),
 			unformattedKey);
 	}
 
 	private sealed class InputModel
 	{
 		[Required]
-		[StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+		[StringLength(maximumLength: 7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
 		[DataType(DataType.Text)]
 		[Display(Name = "Verification Code")]
 		public string Code { get; set; } = "";

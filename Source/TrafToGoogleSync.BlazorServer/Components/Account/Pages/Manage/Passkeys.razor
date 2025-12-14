@@ -1,9 +1,7 @@
 ﻿@page "/Account/Manage/Passkeys"
-
-@using TrafToGoogleSync.BlazorServer.Data
-@using Microsoft.AspNetCore.Identity
-@using System.ComponentModel.DataAnnotations
 @using System.Buffers.Text
+@using Microsoft.AspNetCore.Identity
+@using TrafToGoogleSync.BlazorServer.Data
 
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
@@ -31,8 +29,12 @@
 						<AntiforgeryToken/>
 						<div>
 							<input type="hidden" name="CredentialId" value="@credentialId"/>
-							<button type="submit" name="Action" value="rename" class="btn btn-primary" title="Rename this passkey">Rename</button>
-							<button type="submit" name="Action" value="delete" class="btn btn-danger" title="Remove this passkey from your account">Delete</button>
+							<button type="submit" name="Action" value="rename" class="btn btn-primary"
+									title="Rename this passkey">Rename
+							</button>
+							<button type="submit" name="Action" value="delete" class="btn btn-danger"
+									title="Remove this passkey from your account">Delete
+							</button>
 						</div>
 					</form>
 				</td>
@@ -50,11 +52,13 @@ else
 	<AntiforgeryToken/>
 	@if (currentPasskeys is { Count: >= MaxPasskeyCount })
 	{
-		<p class="text-danger">You have reached the maximum number of allowed passkeys. Please delete one before adding a new one.</p>
+		<p class="text-danger">You have reached the maximum number of allowed passkeys. Please delete one before adding
+			a new one.</p>
 	}
 	else
 	{
-		<PasskeySubmit Operation="PasskeyOperation.Create" Name="Input" class="btn btn-primary">Add a new passkey</PasskeySubmit>
+		<PasskeySubmit Operation="PasskeyOperation.Create" Name="Input" class="btn btn-primary">Add a new passkey
+		</PasskeySubmit>
 	}
 
 </form>
@@ -104,21 +108,21 @@ else
 
 		if (!string.IsNullOrEmpty(Input.Error))
 		{
-			RedirectManager.RedirectToCurrentPageWithStatus($"Error: {Input.Error}", HttpContext);
+			RedirectManager.RedirectToCurrentPageWithStatus(message: $"Error: {Input.Error}", HttpContext);
 
 			return;
 		}
 
 		if (string.IsNullOrEmpty(Input.CredentialJson))
 		{
-			RedirectManager.RedirectToCurrentPageWithStatus("Error: The browser did not provide a passkey.", HttpContext);
+			RedirectManager.RedirectToCurrentPageWithStatus(message: "Error: The browser did not provide a passkey.", HttpContext);
 
 			return;
 		}
 
 		if (currentPasskeys!.Count >= MaxPasskeyCount)
 		{
-			RedirectManager.RedirectToCurrentPageWithStatus($"Error: You have reached the maximum number of allowed passkeys.", HttpContext);
+			RedirectManager.RedirectToCurrentPageWithStatus(message: "Error: You have reached the maximum number of allowed passkeys.", HttpContext);
 
 			return;
 		}
@@ -127,7 +131,7 @@ else
 
 		if (!attestationResult.Succeeded)
 		{
-			RedirectManager.RedirectToCurrentPageWithStatus($"Error: Could not add the passkey: {attestationResult.Failure.Message}", HttpContext);
+			RedirectManager.RedirectToCurrentPageWithStatus(message: $"Error: Could not add the passkey: {attestationResult.Failure.Message}", HttpContext);
 
 			return;
 		}
@@ -136,14 +140,14 @@ else
 
 		if (!addPasskeyResult.Succeeded)
 		{
-			RedirectManager.RedirectToCurrentPageWithStatus("Error: The passkey could not be added to your account.", HttpContext);
+			RedirectManager.RedirectToCurrentPageWithStatus(message: "Error: The passkey could not be added to your account.", HttpContext);
 
 			return;
 		}
 
 		// Immediately prompt the user to enter a name for the credential
 		var credentialIdBase64Url = Base64Url.EncodeToString(attestationResult.Passkey.CredentialId);
-		RedirectManager.RedirectTo($"Account/Manage/RenamePasskey/{credentialIdBase64Url}");
+		RedirectManager.RedirectTo(uri: $"Account/Manage/RenamePasskey/{credentialIdBase64Url}");
 	}
 
 	private async Task UpdatePasskey()
@@ -151,7 +155,7 @@ else
 		switch (Action)
 		{
 			case "rename":
-				RedirectManager.RedirectTo($"Account/Manage/RenamePasskey/{CredentialId}");
+				RedirectManager.RedirectTo(uri: $"Account/Manage/RenamePasskey/{CredentialId}");
 
 				break;
 
@@ -161,7 +165,7 @@ else
 				break;
 
 			default:
-				RedirectManager.RedirectToCurrentPageWithStatus($"Error: Unknown action '{Action}'.", HttpContext);
+				RedirectManager.RedirectToCurrentPageWithStatus(message: $"Error: Unknown action '{Action}'.", HttpContext);
 
 				break;
 		}
@@ -184,7 +188,7 @@ else
 		}
 		catch (FormatException)
 		{
-			RedirectManager.RedirectToCurrentPageWithStatus("Error: The specified passkey ID had an invalid format.", HttpContext);
+			RedirectManager.RedirectToCurrentPageWithStatus(message: "Error: The specified passkey ID had an invalid format.", HttpContext);
 
 			return;
 		}
@@ -193,12 +197,12 @@ else
 
 		if (!result.Succeeded)
 		{
-			RedirectManager.RedirectToCurrentPageWithStatus("Error: The passkey could not be deleted.", HttpContext);
+			RedirectManager.RedirectToCurrentPageWithStatus(message: "Error: The passkey could not be deleted.", HttpContext);
 
 			return;
 		}
 
-		RedirectManager.RedirectToCurrentPageWithStatus("Passkey deleted successfully.", HttpContext);
+		RedirectManager.RedirectToCurrentPageWithStatus(message: "Passkey deleted successfully.", HttpContext);
 	}
 
 }

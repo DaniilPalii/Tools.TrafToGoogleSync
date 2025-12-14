@@ -1,5 +1,4 @@
 ﻿@page "/Account/ExternalLogin"
-
 @using System.ComponentModel.DataAnnotations
 @using System.Security.Claims
 @using System.Text
@@ -35,7 +34,8 @@
 			<DataAnnotationsValidator/>
 			<ValidationSummary class="text-danger" role="alert"/>
 			<div class="form-floating mb-3">
-				<InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email."/>
+				<InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="email"
+						   placeholder="Please enter your email."/>
 				<label for="Input.Email" class="form-label">Email</label>
 				<ValidationMessage For="() => Input.Email"/>
 			</div>
@@ -73,7 +73,7 @@
 
 		if (RemoteError is not null)
 		{
-			RedirectManager.RedirectToWithStatus("Account/Login", $"Error from external provider: {RemoteError}", HttpContext);
+			RedirectManager.RedirectToWithStatus(uri: "Account/Login", message: $"Error from external provider: {RemoteError}", HttpContext);
 
 			return;
 		}
@@ -82,7 +82,7 @@
 
 		if (info is null)
 		{
-			RedirectManager.RedirectToWithStatus("Account/Login", "Error loading external login information.", HttpContext);
+			RedirectManager.RedirectToWithStatus(uri: "Account/Login", message: "Error loading external login information.", HttpContext);
 
 			return;
 		}
@@ -100,7 +100,7 @@
 
 			// We should only reach this page via the login callback, so redirect back to
 			// the login page if we get here some other way.
-			RedirectManager.RedirectTo("Account/Login");
+			RedirectManager.RedirectTo(uri: "Account/Login");
 		}
 	}
 
@@ -108,7 +108,7 @@
 	{
 		if (externalLoginInfo is null)
 		{
-			RedirectManager.RedirectToWithStatus("Account/Login", "Error loading external login information.", HttpContext);
+			RedirectManager.RedirectToWithStatus(uri: "Account/Login", message: "Error loading external login information.", HttpContext);
 
 			return;
 		}
@@ -123,7 +123,7 @@
 		if (result.Succeeded)
 		{
 			Logger.LogInformation(
-				"{Name} logged in with {LoginProvider} provider.",
+				message: "{Name} logged in with {LoginProvider} provider.",
 				externalLoginInfo.Principal.Identity?.Name,
 				externalLoginInfo.LoginProvider);
 
@@ -131,15 +131,16 @@
 
 			return;
 		}
-		else if (result.IsLockedOut)
+
+		if (result.IsLockedOut)
 		{
-			RedirectManager.RedirectTo("Account/Lockout");
+			RedirectManager.RedirectTo(uri: "Account/Lockout");
 
 			return;
 		}
 
 		// If the user does not have an account, then ask the user to create an account.
-		if (externalLoginInfo.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+		if (externalLoginInfo.Principal.HasClaim(match: c => c.Type == ClaimTypes.Email))
 		{
 			Input.Email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email) ?? "";
 		}
@@ -149,7 +150,7 @@
 	{
 		if (externalLoginInfo is null)
 		{
-			RedirectManager.RedirectToWithStatus("Account/Login", "Error loading external login information during confirmation.", HttpContext);
+			RedirectManager.RedirectToWithStatus(uri: "Account/Login", message: "Error loading external login information during confirmation.", HttpContext);
 
 			return;
 		}
@@ -168,22 +169,22 @@
 
 			if (result.Succeeded)
 			{
-				Logger.LogInformation("User created an account using {Name} provider.", externalLoginInfo.LoginProvider);
+				Logger.LogInformation(message: "User created an account using {Name} provider.", externalLoginInfo.LoginProvider);
 
 				var userId = await UserManager.GetUserIdAsync(user);
 				var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-				code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+				code = WebEncoders.Base64UrlEncode(input: Encoding.UTF8.GetBytes(code));
 
 				var callbackUrl = NavigationManager.GetUriWithQueryParameters(
-					NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
-					new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code });
+					NavigationManager.ToAbsoluteUri(relativeUri: "Account/ConfirmEmail").AbsoluteUri,
+					parameters: new Dictionary<string, object?> { [key: "userId"] = userId, [key: "code"] = code });
 
-				await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
+				await EmailSender.SendConfirmationLinkAsync(user, Input.Email, confirmationLink: HtmlEncoder.Default.Encode(callbackUrl));
 
 				// If account confirmation is required, we need to show the link if we don't have a real email sender
 				if (UserManager.Options.SignIn.RequireConfirmedAccount)
 				{
-					RedirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = Input.Email });
+					RedirectManager.RedirectTo(uri: "Account/RegisterConfirmation", queryParameters: new() { [key: "email"] = Input.Email });
 				}
 				else
 				{
@@ -194,7 +195,7 @@
 		}
 		else
 		{
-			message = $"Error: {string.Join(",", result.Errors.Select(error => error.Description))}";
+			message = $"Error: {string.Join(separator: ",", values: result.Errors.Select(selector: error => error.Description))}";
 		}
 	}
 
@@ -206,7 +207,7 @@
 		}
 		catch
 		{
-			throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " + $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor");
+			throw new InvalidOperationException(message: $"Can't create an instance of '{nameof(ApplicationUser)}'. " + $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor");
 		}
 	}
 
@@ -214,7 +215,7 @@
 	{
 		if (!UserManager.SupportsUserEmail)
 		{
-			throw new NotSupportedException("The default UI requires a user store with email support.");
+			throw new NotSupportedException(message: "The default UI requires a user store with email support.");
 		}
 
 		return (IUserEmailStore<ApplicationUser>)UserStore;

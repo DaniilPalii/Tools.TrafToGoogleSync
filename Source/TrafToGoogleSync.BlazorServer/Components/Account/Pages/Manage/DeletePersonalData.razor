@@ -1,5 +1,4 @@
 ﻿@page "/Account/Manage/DeletePersonalData"
-
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
 @using TrafToGoogleSync.BlazorServer.Data
@@ -28,7 +27,9 @@
 		@if (requirePassword)
 		{
 			<div class="form-floating mb-3">
-				<InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Please enter your password."/>
+				<InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control"
+						   autocomplete="current-password" aria-required="true"
+						   placeholder="Please enter your password."/>
 				<label for="Input.Password" class="form-label">Password</label>
 				<ValidationMessage For="() => Input.Password" class="text-danger"/>
 			</div>
@@ -84,13 +85,13 @@
 
 		if (!result.Succeeded)
 		{
-			throw new InvalidOperationException("Unexpected error occurred deleting user.");
+			throw new InvalidOperationException(message: "Unexpected error occurred deleting user.");
 		}
 
 		await SignInManager.SignOutAsync();
 
 		var userId = await UserManager.GetUserIdAsync(user);
-		Logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
+		Logger.LogInformation(message: "User with ID '{UserId}' deleted themselves.", userId);
 
 		RedirectManager.RedirectToCurrentPage();
 	}

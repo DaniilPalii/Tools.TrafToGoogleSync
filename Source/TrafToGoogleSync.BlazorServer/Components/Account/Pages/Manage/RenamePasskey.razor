@@ -1,9 +1,8 @@
 ﻿@page "/Account/Manage/RenamePasskey/{Id}"
-
-@using TrafToGoogleSync.BlazorServer.Data
+@using System.Buffers.Text
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
-@using System.Buffers.Text
+@using TrafToGoogleSync.BlazorServer.Data
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityRedirectManager RedirectManager
@@ -21,7 +20,8 @@
 	<hr/>
 	<ValidationSummary class="text-danger" role="alert"/>
 	<div class="form-floating mb-3">
-		<InputText @bind-Value="Input.Name" id="Input.Name" class="form-control" aria-required="true" placeholder="My passkey"/>
+		<InputText @bind-Value="Input.Name" id="Input.Name" class="form-control" aria-required="true"
+				   placeholder="My passkey"/>
 		<label for="Input.Name" class="form-label">Passkey name</label>
 		<ValidationMessage For="() => Input.Name" class="text-danger"/>
 	</div>
@@ -64,7 +64,7 @@
 		}
 		catch (FormatException)
 		{
-			RedirectManager.RedirectToWithStatus("Account/Manage/Passkeys", "Error: The specified passkey ID had an invalid format.", HttpContext);
+			RedirectManager.RedirectToWithStatus(uri: "Account/Manage/Passkeys", message: "Error: The specified passkey ID had an invalid format.", HttpContext);
 
 			return;
 		}
@@ -73,31 +73,29 @@
 
 		if (passkey is null)
 		{
-			RedirectManager.RedirectToWithStatus("Account/Manage/Passkeys", "Error: The specified passkey could not be found.", HttpContext);
-
-			return;
+			RedirectManager.RedirectToWithStatus(uri: "Account/Manage/Passkeys", message: "Error: The specified passkey could not be found.", HttpContext);
 		}
 	}
 
 	private async Task Rename()
 	{
 		passkey!.Name = Input.Name;
-		var result = await UserManager.AddOrUpdatePasskeyAsync(user!, passkey);
+		var result = await UserManager.AddOrUpdatePasskeyAsync(user: user!, passkey);
 
 		if (!result.Succeeded)
 		{
-			RedirectManager.RedirectToWithStatus("Account/Manage/Passkeys", "Error: The passkey could not be updated.", HttpContext);
+			RedirectManager.RedirectToWithStatus(uri: "Account/Manage/Passkeys", message: "Error: The passkey could not be updated.", HttpContext);
 
 			return;
 		}
 
-		RedirectManager.RedirectToWithStatus("Account/Manage/Passkeys", "Passkey updated successfully.", HttpContext);
+		RedirectManager.RedirectToWithStatus(uri: "Account/Manage/Passkeys", message: "Passkey updated successfully.", HttpContext);
 	}
 
 	private sealed class InputModel
 	{
 		[Required]
-		[StringLength(200, ErrorMessage = "Passkey names must be no longer than {1} characters.")]
+		[StringLength(maximumLength: 200, ErrorMessage = "Passkey names must be no longer than {1} characters.")]
 		public string Name { get; set; } = "";
 	}
 
